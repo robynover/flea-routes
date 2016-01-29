@@ -1,0 +1,46 @@
+<h1>Routing Details</h1>
+<p><b>Start:</b> {{start}}</p>
+<ol>
+{{#each waypoints}}
+	<li>{{name}}, {{#if apt}}<b>{{apt}}</b>,{{/if}} {{address}}</li>
+{{/each}}
+</ol>
+<p><b>End:</b> {{end}}</p>
+<p><b>Total Distance:</b> {{distance}} miles</p>
+<p><b>Total Time:</b> {{duration}} minutes</p>
+<p><b>Estimated Time with Stops:</b> {{est_time}}</p>
+
+<div id="map" style="width:500px;height:500px;"></div>
+
+<!-- map code -->
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?libraries=geometry"></script>
+<script type="text/javascript">
+    var loadMap = function() {
+        var myOptions = {
+        	center: {{{center}}},
+			zoom: 12,
+			mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+        var map = new google.maps.Map(document.getElementById("map"), myOptions);
+        var bounds = new google.maps.LatLngBounds({{{bounds_sw}}},{{{bounds_ne}}});
+        map.fitBounds(bounds);
+        {{#each polylines}}
+	        var routePath = new google.maps.Polyline({
+			    path: google.maps.geometry.encoding.decodePath(unescape("{{ this }}")),
+			    strokeColor: '#FF0000',
+			    strokeOpacity: 1.0,
+			    strokeWeight: 2
+			});
+	        routePath.setMap(map);
+        {{/each}} 
+        
+        {{#each markers}}
+			new google.maps.Marker({
+			    position: {{{ this }}},
+			    map: map 
+			});
+		{{/each}}
+
+    };
+    loadMap();
+</script>

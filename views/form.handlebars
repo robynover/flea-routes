@@ -1,0 +1,15 @@
+<form id="routeform" method="post" action="/process"  enctype="multipart/form-data" >
+	<label>Start</label> 
+	<input type="text" class="form-control" name="origin"/></br>
+	<label>End</label> 
+	<input type="text" class="form-control" name="destination"/></br>
+	<label>Stops</label> <br/>
+	<!--<div class="stops">
+	<input class="form-control" type="text" name="waypoints[]"/></br>
+	<input class="form-control" type="text" name="waypoints[]"/></br>
+	<input class="form-control" type="text" name="waypoints[]"/><br/>
+	</div>-->
+	<div id="upload">Upload a .csv file of your stops <input type="file" name="csvfile"/></div>
+
+	<div id="submit"><input type="submit" class="submit btn" value="Submit"/></div>
+</div>
