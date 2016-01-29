@@ -16,10 +16,12 @@ var upload = multer({dest: 'uploads/'});
 
 var directions = require('./directions');
 
+// show form
 app.get('/', function (req,res){
 	res.render('form');
 });
 
+// form handler
 app.post('/process', upload.single('csvfile'), function (req, res, next) {
   // req.file is the uploaded file
   // req.body holds the text fields
@@ -36,22 +38,57 @@ app.post('/process', upload.single('csvfile'), function (req, res, next) {
         // build string for gmaps ---> waypoints array
         waypoints.push(data.address + ", " + data.city + ',' + data.state);
         // store the person name to use at end ---> names array
-        personInfo.push({name: data.name, apt: data.ApartmentNumber});
+        personInfo.push({name: data.name, apt: data.apt, phone: data.phone});
 
       })
+    .on('error', function(err){
+    	console.log("GOT ERROR!");
+    	console.log(err);
+    })
     .on('end', function (d){
     	// Send it to API processor/parser 
     	directions(origin,destination,waypoints,personInfo)
     		.then(function(output){ 
     			// Get result back from parser and render it to the view 
     			res.render('directions',output);
-    			
     			//clean up
     			fs.unlink(req.file.path);
     		}); 
 
     });
   
+});
+
+// use body parser to process ajax request
+app.use(require('body-parser').urlencoded({extended:true}));
+
+// ajax post to save data from results
+app.post('/save',function(req,res){
+	//console.log(req.body.stops);
+	var content = JSON.stringify(req.body.stops);
+	var fname = Date.now();
+	fs.writeFile('datastore/' + fname + ".json", content, function(err) {
+	    if(err) {
+	        return console.log(err);
+	    }
+
+	    console.log("The file was saved!");
+	}); 
+	res.json({'status':'ok','id':fname});
+});
+
+app.get('/route/:id',function(req,res){
+	var filename = 'datastore/' + req.params.id + '.json';
+	var content = fs.readFileSync(filename, 'utf8', function(err,data){
+		if (err){
+			console.log(err);
+		}
+	});
+	//console.log(JSON.parse(content));
+	var context = {};
+	context.addresses = JSON.parse(content);
+	res.render('route',context);
+	
 });
 
 

@@ -49,6 +49,7 @@ function getRouteData(origin,dest,waypoints,personInfo){
 
 function parseApiData (data) {
 	//return data;
+	//console.log(data);
 	var obj = {};
 	var distance = 0; //meters
 	var duration = 0; // seconds
@@ -71,12 +72,14 @@ function parseApiData (data) {
 		duration += legs[i].duration.value;
 		var num = stopOrder[i];
 		var pObj = {};
-		// to get just the stops, get end address for all but last leg
+		// to get just the stops (not start/end pts), get end address for all but last leg
 		if (i < legs.length - 1){
 			// put location data back with person data in correct order
 			pObj.name = data.personInfo[num].name;
 			pObj.apt = data.personInfo[num].apt;
+			pObj.phone = data.personInfo[num].phone;
 			pObj.address = legs[i].end_address;
+
 			obj.waypoints.push(pObj);
 		}	
 	}
