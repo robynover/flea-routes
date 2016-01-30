@@ -9,6 +9,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "basic-auth": "^1.0.3",
     "bluebird": "^3.1.5",
     "body-parser": "^1.14.2",
     "csv2": "^0.1.1",

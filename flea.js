@@ -15,6 +15,23 @@ var multer  = require('multer');
 var upload = multer({dest: 'uploads/'});
 
 var directions = require('./directions');
+var credentials = require('./credentials');
+
+// auth
+var auth = require('basic-auth');
+app.use(function(req, res, next) {
+    var user = auth(req);
+
+    if (user === undefined 
+    	|| user['name'] !== credentials.authUser 
+    	|| user['pass'] !== credentials.authPw) {
+	        res.statusCode = 401;
+	        res.setHeader('WWW-Authenticate', 'Basic realm="MyRealmName"');
+	        res.end('Unauthorized');
+    } else {
+        next();
+    }
+});
 
 // show form
 app.get('/', function (req,res){
@@ -71,8 +88,6 @@ app.post('/save',function(req,res){
 	    if(err) {
 	        return console.log(err);
 	    }
-
-	    console.log("The file was saved!");
 	}); 
 	res.json({'status':'ok','id':fname});
 });
